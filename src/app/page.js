@@ -1,103 +1,81 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import Footer from '@/components/Footer';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const router = useRouter();
+  const [newsList, setNewsList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+  
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .get('/api/news')
+      .then((res) => {
+        setNewsList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('API Hatası:', err);
+        setError('Haberler yüklenirken bir hata oluştu');
+        setLoading(false);
+      });
+  }, []);
+
+
+
+  // Hata durumu
+  if (error) {
+    return (
+      <main className="flex min-h-screen bg-white justify-center items-center">
+        <div className="text-black text-xl">{error}</div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    );
+  }
+
+  return (
+    <main className="flex min-h-screen flex-wrap">
+      <div className="flex w-[calc(100%-400px)] items-center bg-[#CF161C] p-30">
+        <div className="text-white">
+          <div className="text-xl font-bold">26.07.2025</div>
+          <div className="mb-4 text-9xl font-bold">
+            Bugün <br />
+            ne oldu?
+          </div>
+          <div className="mb-4 text-[9px]">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text...
+          </div>
+          <div>
+            <button
+              onClick={() => router.push('/news')}
+              className="bg-white px-4 py-2 font-bold text-red-500"
+            >
+              GÖRÜNTÜLE
+            </button>
+          </div>
+         <Footer className="bg-[#CF161C] text-white mt-8" />
+        </div>
+      </div>
+
+      <div className="relative w-[400px] bg-white p-12 overflow-y-auto h-screen">
+       <div className="absolute top-0 left-0 z-10 w-full h-[400px] bg-gradient-to-b from-white from-10% to-white/20"></div>
+        <ul className="text-black text-sm flex flex-col gap-4 text-center *:border-b *:border-black *:pb-4">
+          {newsList.map((news, index) => (
+            <li key={news._id}>
+              <div className="text-shadow-lg font-bold text-4xl h-[25px] overflow-hidden opacity-10">
+                {String(index + 1).padStart(2, '0')}
+              </div>
+              {news.summary || 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...'}
+            </li>
+          ))}
+        </ul>
+        <div className="absolute bottom-0 left-0 z-10 w-full h-[400px] bg-gradient-to-t from-white from-10% to-white/50"></div>
+      </div>
+    </main>
   );
 }
