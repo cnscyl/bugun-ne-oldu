@@ -10,6 +10,8 @@ export default function Home() {
   const [newsList, setNewsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [today, setToday] = useState("");
+  const newestNews = newsList.length > 0 ? newsList[0] : null;
 
   
   useEffect(() => {
@@ -27,6 +29,17 @@ export default function Home() {
       });
   }, []);
 
+    useEffect(() => {
+    const now = new Date();
+
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0'); 
+    const year = now.getFullYear();
+
+    const formattedDate = `${day}.${month}.${year}`;
+    setToday(formattedDate);
+  }, []);
+
 
 
   // Hata durumu
@@ -39,7 +52,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-wrap">
+ <main className="flex min-h-screen flex-wrap">
       <div className="flex w-[calc(100%-400px)] items-center bg-[#CF161C] p-30">
         <div className="text-white">
           <div className="text-xl font-bold">26.07.2025</div>
@@ -47,8 +60,8 @@ export default function Home() {
             Bugün <br />
             ne oldu?
           </div>
-          <div className="mb-4 text-[9px]">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text...
+          <div className="mb-4 text-[12px]">
+            {newestNews?.summary || 'Bugünün özeti burada yer alacak...'}
           </div>
           <div>
             <button
@@ -58,24 +71,36 @@ export default function Home() {
               GÖRÜNTÜLE
             </button>
           </div>
-         <Footer className="bg-[#CF161C] text-white mt-8" />
+
         </div>
       </div>
 
-      <div className="relative w-[400px] bg-white p-12 overflow-y-auto h-screen">
-       <div className="absolute top-0 left-0 z-10 w-full h-[400px] bg-gradient-to-b from-white from-10% to-white/20"></div>
-        <ul className="text-black text-sm flex flex-col gap-4 text-center *:border-b *:border-black *:pb-4">
-          {newsList.map((news, index) => (
-            <li key={news._id}>
-              <div className="text-shadow-lg font-bold text-4xl h-[25px] overflow-hidden opacity-10">
-                {String(index + 1).padStart(2, '0')}
-              </div>
-              {news.summary || 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...'}
-            </li>
-          ))}
-        </ul>
-        <div className="absolute bottom-0 left-0 z-10 w-full h-[400px] bg-gradient-to-t from-white from-10% to-white/50"></div>
+      <div>
+        <div className="bg-white hidden lg:block lg:w-[400px] p-6 lg:h-screen">
+          <div className="relative z-30 h-full w-full overflow-y-auto text-black
+                [mask-image:linear-gradient(to_bottom,transparent_0%,black_30%)]
+                [mask-size:100%_100%] [mask-repeat:no-repeat]">
+            <div className="relative z-30 h-full w-full overflow-y-auto text-black
+                  [mask-image:linear-gradient(to_top,transparent_0%,black_30%)]
+                  [mask-size:100%_100%] [mask-repeat:no-repeat]">
+
+              <div className="absolute right-0 top-0 bottom-0 w-4 bg-white z-10 pointer-events-none" />
+
+              <ul className="text-xl flex flex-col gap-4 pl-15 px-10 text-center border-t border-black pt-4 font-[Poppins]">
+                {newsList.map((item, index) => (
+                  <li key={item._id ?? index} className="border-b border-black pb-4">
+                    <div className="font-bold text-5xl h-[25px] overflow-hidden opacity-10">
+                      {String(index + 1).padStart(2, '0')}
+                    </div>
+                    {item.summary}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="absolute right-0 top-0 z-50 bg-white w-10 h-screen p-6 hidden lg:block"></div>
       </div>
-    </main>
+    </main >
   );
 }
